@@ -23,6 +23,9 @@ export const GET = async (
         thumbnail:
           info.videoDetails.thumbnails[info.videoDetails.thumbnails.length - 1]
             .url,
+        qualities: info.formats
+          .filter((format) => format.hasVideo && format.qualityLabel !== "144p")
+          .map((format) => format.qualityLabel),
       };
 
       return NextResponse.json({

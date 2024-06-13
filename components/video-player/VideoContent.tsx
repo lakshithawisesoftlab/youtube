@@ -11,14 +11,35 @@ interface VideoContentProps {
   id: string;
   thumbnail: string;
   videoQuality: string;
+  qualities: string[];
 }
 
 const VideoContent: React.FC<VideoContentProps> = ({
   id,
   thumbnail,
   videoQuality,
+  qualities,
 }) => {
   const [isPaused, setIsPaused] = useState(true);
+
+  const reOrderQualities = () => {
+    const order = [
+      "2160p",
+      "1440p",
+      "1080p",
+      "720p",
+      "480p",
+      "360p",
+      "240p",
+      "144p",
+    ];
+
+    return qualities
+      .sort((a, b) => order.indexOf(a) - order.indexOf(b))
+      .filter((value, index, self) => self.indexOf(value) === index);
+  };
+
+  const orderedQualities = reOrderQualities();
 
   return isPaused ? (
     <div className="min-h-[215px] lg:min-h-[300px] w-full lg:w-[calc(50%-50px)] relative">
@@ -35,7 +56,11 @@ const VideoContent: React.FC<VideoContentProps> = ({
       />
     </div>
   ) : (
-    <VideoPlayer id={id} videoQuality={videoQuality} />
+    <VideoPlayer
+      id={id}
+      videoQuality={videoQuality}
+      qualities={orderedQualities}
+    />
   );
 };
 

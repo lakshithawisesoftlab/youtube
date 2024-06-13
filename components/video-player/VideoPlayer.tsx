@@ -22,9 +22,14 @@ import { useRouter } from "next/navigation";
 interface VideoPlayerProps {
   id: string;
   videoQuality?: string;
+  qualities: string[];
 }
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ id, videoQuality }) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({
+  id,
+  videoQuality,
+  qualities,
+}) => {
   const videoContainerRef = useRef<HTMLDivElement>(null);
   const videoPlayerRef = useRef<HTMLVideoElement>(null);
   const volumeSliderRef = useRef<HTMLInputElement>(null);
@@ -39,7 +44,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ id, videoQuality }) => {
     direction: "",
   });
   const [qualityClicked, setQualityClicked] = React.useState(false);
-  const [quality, setQuality] = React.useState(videoQuality ?? "480p");
+  const [quality, setQuality] = React.useState(videoQuality ?? "360p");
   const [openSettings, setOpenSettings] = React.useState(false);
 
   const router = useRouter();
@@ -257,7 +262,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ id, videoQuality }) => {
     if (video && video.buffered.length > 0) {
       const bufferedEnd = video.buffered.end(video.buffered.length - 1);
       const currentTime = video.currentTime;
-      const BUFFER_TOLERANCE = 5; // Adjust based on your requirements (seconds)
+      const BUFFER_TOLERANCE = 1;
 
       if (bufferedEnd - currentTime <= BUFFER_TOLERANCE) {
         setIsBuffering(true);
@@ -407,11 +412,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ id, videoQuality }) => {
     const watchedTime = videoPlayerRef.current?.currentTime;
     localStorage.setItem(id, watchedTime ? watchedTime.toString() : "0");
 
-    router.push(`/${id}?quality=${quality}`);
+    // router.push(`/${id}?quality=${quality}`);
   };
 
   useEffect(() => {
     const watchedTime = localStorage.getItem(id);
+
     if (watchedTime && videoPlayerRef.current) {
       videoPlayerRef.current.currentTime = parseFloat(watchedTime);
       videoPlayerRef.current.pause();
@@ -527,71 +533,25 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ id, videoQuality }) => {
                     </div>
 
                     <div className="flex flex-col mt-2">
-                      <div
-                        onClick={() => handleQualityChange("1080p")}
-                        className="flex items-center px-2 py-2 cursor-pointer w-full"
-                      >
-                        {quality === "1080p" && (
-                          <Check className="text-white size-4 shrink-0 mr-2.5" />
-                        )}
-
-                        <span
-                          className={cn(
-                            "text-xs font-semibold text-white",
-                            quality !== "1080p" && "ml-[26px]"
-                          )}
+                      {qualities.map((q, index) => (
+                        <div
+                          key={index}
+                          onClick={() => handleQualityChange(q)}
+                          className="flex items-center px-2 py-2 cursor-pointer w-full"
                         >
-                          1080p
-                        </span>
-                      </div>
-                      <div
-                        onClick={() => handleQualityChange("720p")}
-                        className="flex items-center px-2 py-2 cursor-pointer w-full"
-                      >
-                        {quality === "720p" && (
-                          <Check className="text-white size-4 shrink-0 mr-2.5" />
-                        )}
-                        <span
-                          className={cn(
-                            "text-xs font-semibold text-white",
-                            quality !== "720p" && "ml-[26px]"
+                          {quality === q && (
+                            <Check className="text-white size-4 shrink-0 mr-2.5" />
                           )}
-                        >
-                          720p
-                        </span>
-                      </div>
-                      <div
-                        onClick={() => handleQualityChange("480p")}
-                        className="flex items-center px-2 py-2 cursor-pointer w-full"
-                      >
-                        {quality === "480p" && (
-                          <Check className="text-white size-4 shrink-0 mr-2.5" />
-                        )}
-                        <span
-                          className={cn(
-                            "text-xs font-semibold text-white",
-                            quality !== "480p" && "ml-[26px]"
-                          )}
-                        >
-                          480p
-                        </span>
-                      </div>
-                      <div
-                        onClick={() => handleQualityChange("360p")}
-                        className="flex items-center px-2 py-2 cursor-pointer w-full"
-                      >
-                        {quality === "360p" && (
-                          <Check className="text-white size-4 shrink-0 mr-2.5" />
-                        )}
-                        <span
-                          className={cn(
-                            "text-xs font-semibold text-white",
-                            quality !== "360p" && "ml-[26px]"
-                          )}
-                        >
-                          360p
-                        </span>
-                      </div>
+                          <span
+                            className={cn(
+                              "text-xs font-semibold text-white",
+                              quality !== q && "ml-[26px]"
+                            )}
+                          >
+                            {q}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}

@@ -21,6 +21,7 @@ const Page: React.FC<PageProps> = async ({ params, searchParams }) => {
         id={params.id}
         thumbnail={data?.thumbnail}
         videoQuality={searchParams.quality}
+        qualities={data?.qualities}
       />
     </div>
   );

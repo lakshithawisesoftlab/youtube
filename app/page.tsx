@@ -55,6 +55,9 @@ const Page = () => {
     if (res.data.status === "200") {
       toast.success(res.data.message);
       setUrlId(res.data.data.id);
+      form.reset();
+      form.clearErrors();
+      form.setValue("url", "");
     } else {
       toast.error(res.data.message);
     }
